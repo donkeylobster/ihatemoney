@@ -20,6 +20,7 @@ if 'IHATEMONEY_SETTINGS_FILE_PATH' in os.environ:
 from .. import run
 from .. import models
 from .. import utils
+from .. import default_settings
 
 __HERE__ = os.path.dirname(os.path.abspath(__file__))
 
@@ -75,12 +76,18 @@ class BudgetTestCase(TestCase):
     def test_default_configuration(self):
         """Test that default settings are loaded when no other configuration file is specified"""
         run.configure()
-        self.assertFalse(run.app.config['DEBUG'])
-        self.assertEqual(run.app.config['SQLALCHEMY_DATABASE_URI'], 'sqlite:///budget.db')
-        self.assertFalse(run.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'])
-        self.assertEqual(run.app.config['SECRET_KEY'], 'tralala')
-        self.assertEqual(run.app.config['MAIL_DEFAULT_SENDER'],
-                         ("Budget manager", "budget@notmyidea.org"))
+        app_config = run.app.config
+        self.assertEqual(app_config['DEBUG'], default_settings.DEBUG)
+        self.assertEqual(app_config['SECRET_KEY'], default_settings.SECRET_KEY)
+        self.assertEqual(
+            app_config['SQLALCHEMY_DATABASE_URI'],
+            default_settings.SQLALCHEMY_DATABASE_URI)
+        self.assertEqual(
+            app_config['SQLALCHEMY_TRACK_MODIFICATIONS'],
+            default_settings.SQLALCHEMY_TRACK_MODIFICATIONS)
+        self.assertEqual(
+            app_config['MAIL_DEFAULT_SENDER'],
+            default_settings.MAIL_DEFAULT_SENDER)
 
     def test_env_var_configuration_file(self):
         """Test that settings are loaded from the specified configuration file"""
